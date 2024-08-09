@@ -29,3 +29,36 @@ def srt(request):
 
 
     return render(request, 'home.html', d)
+
+
+def update(request):
+    if request.method == 'GET':
+        pk = request.GET.get('pk')
+        todo_object = Todo.objects.get(sno=pk)
+        if todo_object:
+            d = {'obj': todo_object}
+            return render(request, 'update.html', d)
+        return HttpResponse('object not found')
+    elif request.method == 'POST':
+        pk = request.POST.get('pk')
+        todo_object = Todo.objects.filter(sno=pk)
+        if todo_object:
+            title = request.POST.get('title')
+            desc = request.POST.get('desc')
+            todo_object.update(title=title, desc=desc)
+            alltodos = Todo.objects.all()
+            d = {'alltodos': alltodos}
+            return render(request, 'home.html', d)
+        return HttpResponse('invalid object')
+    return render(request, 'update.html')
+
+def delete(request):
+    if request.method == 'POST':
+        pk = request.POST.get('pk')
+        todo_object = Todo.objects.filter(sno=pk)
+        if todo_object:
+            todo_object.delete()
+            alltodos = Todo.objects.all()
+            d = {'alltodos': alltodos}
+            return render(request, 'home.html', d)
+    return render(request, 'home.html')
